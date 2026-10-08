@@ -1,3 +1,5 @@
+Tomorrow will be an update, related to reorganizing files to make project more "beatiful" + some new implementations
+
 UPDATE:
 
 ~~Started tests in main.cpp~~ Finished main.cpp!
