@@ -1,4 +1,7 @@
 #include "Blockchain.h"
+#include "Account.h"
+#include "Transaction.h"
+using namespace std;
 
 void display() {
 	cout << "----------  Menu  ----------\n";
@@ -30,6 +33,7 @@ int main() {
 		}
 		if (choiceOfUser == 0) {
 			cout << "Exiting from the program, goodbye!\n";
+			break;
 		}
 		try {
 			switch (choiceOfUser)
@@ -42,12 +46,12 @@ int main() {
 					cout << "Enter the balance of the account (should be positive): ";
 					cin >> balance;
 					Account user(name, balance);
-					addUser(user);
+					UserInformation::addUser(user);
 					break;
 				}
 				case 2: {
 					if (dataUsers.size() < 2) {
-						throw exception("The database consists either one or none users! Try to add at least 2 to create a transaction!\n");
+						throw out_of_range("The database consists either one or none users! Try to add at least 2 to create a transaction!\n");
 					}
 					string send, receive;
 					double amount;
@@ -67,7 +71,7 @@ int main() {
 					break;
 				}
 				case 4: {
-					printDataUsers();
+					UserInformation::printDataUsers();
 					break;
 				}
 				case 5: {
@@ -76,10 +80,10 @@ int main() {
 				}
 				case 6: {
 					if (dataBaseForTransactions.size() == 0) {
-						throw exception("There weren't any transactions yet! Try to create a transaction, after that, try this method again");
+						throw invalid_argument("There weren't any transactions yet! Try to create a transaction, after that, try this method again");
 					}
 					cout << "Checking the validality of blockchain....\n";
-					cout << blockchain.isHashValid() ? "Yes, it is valid, nothing wrong\n" : "Something feels odd\n";
+					cout << (blockchain.isHashValid() ? "Yes, it is valid, nothing wrong\n" : "Something feels odd\n");
 					break;
 				}
 				default:

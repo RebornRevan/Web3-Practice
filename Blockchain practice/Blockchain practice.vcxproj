@@ -153,10 +153,19 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Account.h" />
+    <ClInclude Include="Block.h" />
     <ClInclude Include="Blockchain.h" />
+    <ClInclude Include="SHA.h" />
+    <ClInclude Include="Transaction.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Account.cpp" />
+    <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Blockchain.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SHA.cpp" />
+    <ClCompile Include="Transactions.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
