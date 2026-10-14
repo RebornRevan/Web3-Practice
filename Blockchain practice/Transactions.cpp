@@ -16,18 +16,14 @@ void Transaction::transferMoney() {
 	if (sender == receiver) {
 		throw std::invalid_argument("The receiver can't be you!\n");
 	}
-	if (dataUsers.count(sender) == 0) {
+	if (!UserInformation::hasUser(sender)) {
 		throw std::runtime_error("The sender doesn't exist in the system\n");
 	}
-	if (dataUsers.count(receiver) == 0) {
+	if (!UserInformation::hasUser(receiver)) {
 		throw std::runtime_error("The receiver doesn't exist in the system\n");
 	}
 
-	Account& from = dataUsers.at(sender);
-	Account& to = dataUsers.at(receiver);
-
-	from.withdraw(amount);
-	to.deposit(amount);
+	UserInformation::proccessTransfer(sender, receiver, amount);
 
 	message = "The sender <" + sender + "> had sent " + std::to_string(amount) + "$ to the receiver<" + receiver + ">\n";
 	std::cout << message;
