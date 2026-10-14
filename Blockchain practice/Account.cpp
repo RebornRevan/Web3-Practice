@@ -14,6 +14,7 @@ Account::Account(std::string& n, std::string& pass, double bal) {
 	balance = bal;
 	setPassword(pass);
 	secretKeys = generateSecretKeys();
+	showSecretKeys();
 }
 
 bool Account::verifyPassword(std::string& pass) const {
@@ -86,7 +87,7 @@ bool Account::verifyKeys() const {
 		std::string inputKey;
 		std::cout << "Enter key word number <" << (i + 1) << ">: ";
 
-		if (!std::getline(std::cin, inputKey)) {
+		if (!(std::cin >> inputKey)) {
 			return false;
 		}
 

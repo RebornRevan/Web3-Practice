@@ -45,7 +45,7 @@ int main() {
 					double balance;
 					cout << "Enter the name of the account (should be longer than 3 letters): ";
 					cin >> name;
-					if (!UserInformation::hasUser(name)) {
+					if (UserInformation::hasUser(name)) {
 						throw invalid_argument("The username is already used!\n");
 					}
 					cout << "Enter the balance of the account (should be positive): ";
@@ -86,8 +86,8 @@ int main() {
 					break;
 				}
 				case 6: {
-					if (dataBaseForTransactions.size() == 0) {
-						throw invalid_argument("There weren't any transactions yet! Try to create a transaction, after that, try this method again");
+					if (blockchain.getLastBlock().index == 0) {
+						throw invalid_argument("The blockchain only contains the Genesis block! You can't compute the validality of hash of it(");
 					}
 					cout << "Checking the validality of blockchain....\n";
 					cout << (blockchain.isHashValid() ? "Yes, it is valid, nothing wrong\n" : "Something feels odd\n");
