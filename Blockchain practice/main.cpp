@@ -18,12 +18,23 @@ void display() {
 	cout << " Enter the number:\n\n";
 }
 
+void exportAllData(const BlockChain& blockchain) {
+	cout << "Beginning to export data to JSON...\n";
+	bool users_true = UserInformation::transformUsersToJSON();
+	bool transactions_true = blockchain.transformTransactionsToJSON();
 
+	if (users_true && transactions_true) {
+		cout << "The exporting of files finished! You can access them\n";
+	}
+	else {
+		cerr << "Error occured during writing one of the files!\n";
+	}
+}
 
 
 int main() {
 	
-	BlockChain blockchain(4);
+	BlockChain blockchain(2);
 	int choiceOfUser;
 	while (true) {
 		display();
@@ -34,6 +45,7 @@ int main() {
 			continue;
 		}
 		if (choiceOfUser == 0) {
+			exportAllData(blockchain);
 			cout << "Exiting from the program, goodbye!\n";
 			break;
 		}
@@ -69,7 +81,7 @@ int main() {
 					cout << "Enter the amount of money you'd like to transfer (should be positive): ";
 					cin >> amount;
 					Transaction bill(send, receive, amount);
-					bill.transferMoney();
+					blockchain.proccessTransaction(bill);
 					break;
 				}
 				case 3: {
@@ -87,7 +99,7 @@ int main() {
 				}
 				case 6: {
 					if (blockchain.getLastBlock().index == 0) {
-						throw invalid_argument("The blockchain only contains the Genesis block! You can't compute the validality of hash of it(");
+						throw invalid_argument("The blockchain only contains the Genesis block! You can't compute the validality of hash of it");
 					}
 					cout << "Checking the validality of blockchain....\n";
 					cout << (blockchain.isHashValid() ? "Yes, it is valid, nothing wrong\n" : "Something feels odd\n");
@@ -120,7 +132,7 @@ int main() {
 					break;
 				}
 				default:
-					cout << "Wrong choice, buddy) Try a number in range from 0 to 6!\n";
+					cout << "Wrong choice, buddy) Try a number in range from 0 to 8!\n";
 					break;
 			}
 		}

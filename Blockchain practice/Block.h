@@ -3,7 +3,7 @@
 #include <string>
 #include <ctime>
 #include "Transaction.h"
-
+	
 class Block {
 public:
 	int index;		//Index of block, индекс блока
@@ -15,7 +15,7 @@ public:
 
 
 	// Constructor, конструктор
-	Block(int i, std::string previousHash, std::vector<Transaction> blockData);
+	Block(int i, const std::string& previousHash, const std::vector<Transaction>& blockData);
 
 	// Realization of Proof of Work(PoW), реализация PoW
 	void mineBlock(int length);

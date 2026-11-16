@@ -1,9 +1,13 @@
 #include "Account.h"
+#include "SHA.h"
+#include <cmath>
+#include <fstream>
+#include <algorithm>
 
 const std::vector<std::string> Account::library = { "Crypto", "Newcastle", "Axle", "Conduit", "Bangalore", "Fuse", "Revenant", "MadMaggie", "Ballistic", "Wraith", "Octaine", "Pathfinder", "Horizon",
 "Ash", "Alter", "Bloodhound", "Seer", "Valkyrie", "Sparrow", "Vantage", "Gibraltar", "Lifeline", "Mirage", "Loba", "Wattson", "Caustic", "Rampart", "Catalyst" };
 
-Account::Account(std::string& n, std::string& pass, double bal) {
+Account::Account(const std::string& n, const std::string& pass, double bal) {
 	if (n.length() < 3) {
 		throw std::invalid_argument("The length of the name should be at least 3 letters long\n");
 	}
@@ -17,16 +21,15 @@ Account::Account(std::string& n, std::string& pass, double bal) {
 	showSecretKeys();
 }
 
-bool Account::verifyPassword(std::string& pass) const {
+bool Account::verifyPassword(const std::string& pass) const {
 	return !password.empty() && password == pass;
 }
-void Account::setPassword(std::string& pass) {
-	if (pass.length() >= 5) {
-		password = pass;
-	}
-	else{
+void Account::setPassword(const std::string& pass) {
+	if (pass.length() < 5) {
 		throw std::invalid_argument("Password must contain at least 5 characters. Try again.\n");
 	}
+	password = pass;
+	passwordHash = SHAPassword();
 }
 
 
@@ -35,19 +38,22 @@ double Account::getBalance() const { return balance; }
 
 
 
-void Account::deposit(double amount) { balance += amount; }
+void Account::deposit(double amount) {
+	if (amount <= 0) {
+		throw std::runtime_error("Amount should be only positive number.\n");
+	}
+	balance += amount;
+}
 
 
 void Account::withdraw(double amount) {
+	if (amount <= 0.0) {
+		throw std::invalid_argument("Withdrawal amount should be positive!.\n");
+	}
 	if (amount > balance) {
-		throw std::runtime_error("Insufficient funds for withdrawal.\n");
+		throw std::runtime_error("Insufficient fund for withdrawal.\n");
 	}
-	else if (amount < 0) {
-		throw std::runtime_error("Withdrawal amount cannot be negative.\n");
-	}
-	else {
-		balance -= amount;
-	}
+	balance -= amount;
 }
 
 
@@ -83,7 +89,7 @@ void Account::showSecretKeys() const {
 
 bool Account::verifyKeys() const {
 	std::cout << "Enter your 6 secret key words in the CORRECT order:\n";
-	for (int i = 0; i < secretKeys.size(); ++i) {
+	for (size_t i = 0; i < secretKeys.size(); ++i) {
 		std::string inputKey;
 		std::cout << "Enter key word number <" << (i + 1) << ">: ";
 
@@ -98,6 +104,22 @@ bool Account::verifyKeys() const {
 	}
 	std::cout << "Successful verification!\n";
 	return true;
+}
+
+std::string Account::SHAPassword() const {
+	return "0x" + sha256(password);
+}
+
+std::string Account::SHASecretKeys() const {
+	std::string keys;
+	for (const auto& key : secretKeys) {
+		keys += key;
+	}
+	return "0x" + sha256(keys);
+}
+
+std::string Account::getPasswordHash() const {
+	return passwordHash;
 }
 
 
@@ -122,8 +144,7 @@ namespace UserInformation {
 		return dataUsers.size();
 	}
 
-	//Function to add user(also checks if username is not already in the dataUsers(in the future need to add checking the secret key combination),
-	//Функция для добавления пользователя в dataUsers + проверка на наличие имени пользователя в dataUsers(в будщем надо добавить проверку на комбинацию ключей)
+
 	void addUser(const Account& user) {
 		if (dataUsers.count(user.getName()) == 0) {
 			dataUsers.insert({ user.getName(), user });
@@ -134,7 +155,7 @@ namespace UserInformation {
 		}
 	}
 
-	bool hasUser(std::string& name) {
+	bool hasUser(const std::string& name) {
 		if (dataUsers.count(name) == 0) {
 			return false;
 		}
@@ -142,7 +163,7 @@ namespace UserInformation {
 	}
 
 
-	void proccessTransfer(std::string& sender, std::string& receiver, double amount) {
+	void proccessTransfer(const std::string& sender, const std::string& receiver, double amount) {
 		Account& from = dataUsers.at(sender);
 		Account& to = dataUsers.at(receiver);
 
@@ -152,7 +173,7 @@ namespace UserInformation {
 
 
 
-	bool loginIntoAccount(std::string& username) {
+	bool loginIntoAccount(const std::string& username) {
 		if (dataUsers.count(username) == 0) {
 			std::cout << "The account is NOT found!\n";
 			return false;
@@ -173,8 +194,8 @@ namespace UserInformation {
 		return false;
 	}
 
-	// Recovery access by secret keys, Восстановление доступа к аккаунту по секретным ключам
-	bool recoverAccountAccess(std::string& username) {
+
+	bool recoverAccountAccess(const std::string& username) {
 		if (dataUsers.count(username) == 0) {
 			std::cout << "The account is NOT found\n";
 			return false;
@@ -200,5 +221,46 @@ namespace UserInformation {
 			std::cout << e.what() << " Recovery denied.\n";
 			return false;
 		}
+	}
+
+	bool transformUsersToJSON() {
+		std::ofstream file("users.json");
+
+
+		if (!file.is_open()) {
+			std::cerr << "There is an error in opening the file!\n";
+			return false;
+		}
+		file << "[\n";
+		bool firstEntry = true;
+
+		for (const auto& [name, user] : dataUsers) {
+			// To get correct format, Правильное форматирование файла
+			if (!firstEntry) {
+				file << ",\n";
+			}
+			firstEntry = false;
+
+			// Avoiding mistakes with float numbers(when rounding), Не допускаем ошибки с дробными числами при округлении
+			long long balanceCents = std::llround(user.getBalance() * 100.0);
+
+
+			//JSON format, JSON формат
+			file << "  {\n"
+				<< "    \"name\": \"" << name << "\",\n"
+				<< "    \"passwordHash\": \"" << user.getPasswordHash() << "\",\n"
+				<< "    \"balanceCents\": " << balanceCents << ",\n"
+				<< "    \"secretKeysHash\": \"" << user.SHASecretKeys() << "\"\n"
+				<< "  }";
+		}
+		file << "\n]\n";
+
+		// Checks if something happens during writing, Проверка на прерывание записи
+		if (file.fail()) {
+			std::cerr << "Error while writing into the file\n";
+			return false;
+		}
+
+		return true;
 	}
 }

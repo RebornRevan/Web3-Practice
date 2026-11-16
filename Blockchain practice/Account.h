@@ -11,15 +11,19 @@ private:
 	std::string password;		//Password for account, пароль от аккаунта
 	double balance;		//Balance of account, баланс аккаунта
 	std::vector<std::string> secretKeys;	//Vector of secret keys, вектор секретных ключей
+	std::string passwordHash;		//Hash of the password, хэш пароля
 
 	//Library for creating secret keys(consists of 6 key words), Сборник для создания секретного ключа(состоит из 6 слов)
 	static const std::vector<std::string> library;
+
+	// Getter for transforming password into sha256 for exporting it into JSON, Геттер для получения sha256 пароля, чтобы занести их в JSON
+	std::string SHAPassword() const;
 public:
-	Account(std::string& n,std::string& pass, double bal);
+	Account(const std::string& n, const std::string& pass, double bal);
 
 	// Functions about password, Функции для пароля
-	bool verifyPassword(std::string& inputPass) const;
-	void setPassword(std::string& pass);
+	bool verifyPassword(const std::string& inputPass) const;
+	void setPassword(const std::string& pass);
 
 
 	// Getters for name and balance, геттеры для имени и баланса
@@ -41,10 +45,20 @@ public:
 
 	// Function to verify entered secret Key combination (returns True or False), Функция для подтверждение введенных ключей (возвращает True или False)
 	bool verifyKeys() const;
+	
+	//// Getters for transforming password and secret keys into sha256 for exporting it into JSON, Геттеры для получения sha256 пароля и сидов, чтобы занести их в JSON
+	//std::string SHAPassword() const;
+	std::string SHASecretKeys() const;
+
+	// Getter for hashed password, Геттер для захешированного пароля
+	std::string getPasswordHash() const;
 
 };
 
 namespace UserInformation {
+
+	//Function to add user(also checks if username is not already in the dataUsers(in the future need to add checking the secret key combination),
+	//Функция для добавления пользователя в dataUsers + проверка на наличие имени пользователя в dataUsers(в будщем надо добавить проверку на комбинацию ключей)
 	void addUser(const Account& user);
 	void printDataUsers();
 
@@ -52,14 +66,18 @@ namespace UserInformation {
 	size_t getUsersCount();
 
 	// Check if user is in the database, проверка на наличие пользователя в базе данных
-	bool hasUser(std::string& name);
+	bool hasUser(const std::string& name);
 
-	void proccessTransfer(std::string& sender, std::string& receiver, double amount);
+	// Creates a transaction, Создает перевод
+	void proccessTransfer(const std::string& sender, const std::string& receiver, double amount);
 
 	// Log into the session of user, Вход в аккаунт пользователя
-	bool loginIntoAccount(std::string& name);
+	bool loginIntoAccount(const std::string& name);
 
-	// Check the validility of secret keys combination, проверка на комбинацию секретных ключей
-	bool recoverAccountAccess(std::string& name);
+	// Recovery access by secret keys, Восстановление доступа к аккаунту по секретным ключам
+	bool recoverAccountAccess(const std::string& name);
+
+	// Collect all information about users and then, transform it to the JSON, Собрав информацию о пользователях, загружаем все в JSON
+	bool transformUsersToJSON();
 
 }

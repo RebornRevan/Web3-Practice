@@ -1,5 +1,6 @@
 #include "Blockchain.h"
-
+#include <fstream>
+#include <cmath>
 
 BlockChain::BlockChain(int len) : length(len) {
 	blockchain.push_back(createGenBlock());
@@ -50,7 +51,7 @@ bool BlockChain::isHashValid() const {
 
 void BlockChain::printBlockChain() const {
 	std::cout << "-----   Information about BlockChain   -----\n";
-	for (auto& block : blockchain) {
+	for (const auto& block : blockchain) {
 		std::cout << "-----   Block   -----\n";
 		std::cout << "Index: " << block.index << '\n';
 		std::cout << "Previous Hash: " << block.prevHash << '\n';
@@ -69,3 +70,68 @@ void BlockChain::printBlockChain() const {
 	}
 }
 
+void BlockChain::proccessTransaction(const Transaction& tr) {
+	if (tr.getSender() == tr.getReceiver()) {
+		throw std::invalid_argument("The receiver can't be you!\n");
+	}
+	if (!UserInformation::hasUser(tr.getSender())) {
+		throw std::runtime_error("The sender doesn't exist in the system\n");
+	}
+	if (!UserInformation::hasUser(tr.getSender())) {
+		throw std::runtime_error("The receiver doesn't exist in the system\n");
+	}
+
+	UserInformation::proccessTransfer(tr.getSender(), tr.getReceiver(), tr.getAmount());
+	addTransaction(tr);
+
+	std::cout << "The sender <" + tr.getSender() + "> had sent " + std::to_string(tr.getAmount()) + "$ to the receiver <" + tr.getReceiver() + ">\n";
+}
+
+void BlockChain::addTransaction(const Transaction& tr) {
+	dataBaseForTransactions.push_back(tr);
+}
+
+
+bool BlockChain::transformTransactionsToJSON() const {
+	std::ofstream file("transactions.json");
+
+
+	if (!file.is_open()) {
+		std::cerr << "There is an error in opening the file!\n";
+		return false;
+	}
+	file << "[\n";
+	bool firstEntry = true;
+	for (const auto& block : blockchain) {
+		if (block.index == 0) {
+			continue; //Skip genesis block, no transactions, Пропускаем первый блок, так как транзакций там нет
+		}
+		for (const auto& pair : block.data) {
+			// To get correct format, Правильное форматирование файла
+			if (!firstEntry) {
+				file << ",\n";
+			}
+			firstEntry = false;
+
+			// Avoiding mistakes with float numbers(when rounding), Не допускаем ошибки с дробными числами при округлении
+			long long amountCents = std::llround(pair.getAmount() * 100.0);
+
+			//JSON format, JSON формат
+			file << "  {\n"
+				<< "    \"blockIndex\": \"" << block.index << ",\n"
+				<< "    \"senderName\": \"" << pair.getSender() << "\",\n"
+				<< "    \"receiverName\": \"" << pair.getReceiver() << "\",\n"
+				<< "    \"amountCents\": " << amountCents << "\n"
+				<< "  }";
+		}
+	}
+	file << "\n]\n";
+
+	// Checks if something happens during writing, Проверка на прерывание записи
+	if (file.fail()) {
+		std::cerr << "Error while writing into the file\n";
+		return false;
+	}
+
+	return true;
+}

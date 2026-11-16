@@ -1,0 +1,14 @@
+[
+  {
+    "name": "lol",
+    "passwordHash": "0x3583e2784d4accd7b12ddebc153b0dacb41db7e947a5736a58230a3f03935eb1",
+    "balanceCents": 10500,
+    "secretKeysHash": "0x71245d7b7f6607f4a146f960197fa63257f54c1ac790255dbbe42f212b2338e1"
+  },
+  {
+    "name": "pop",
+    "passwordHash": "0xd0a88eca2303f7ac7530fedb6aba66ab55c317c50c16d81b2870ad31ac9f3a78",
+    "balanceCents": 9500,
+    "secretKeysHash": "0x8d7ef3372ce7cfaf7d92a06b1a1fcc804b4791d3c89387ab772e41f6cc44ce2b"
+  }
+]

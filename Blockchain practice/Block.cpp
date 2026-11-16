@@ -3,7 +3,7 @@
 #include <sstream>
 
 
-Block::Block(int i, std::string previousHash, std::vector<Transaction> blockData) : index(i), prevHash(previousHash), data(blockData) {
+Block::Block(int i, const std::string& previousHash, const std::vector<Transaction>& blockData) : index(i), prevHash(previousHash), data(blockData) {
 	cTime = time(nullptr);
 	hash = calculateHash();
 }

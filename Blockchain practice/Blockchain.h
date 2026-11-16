@@ -4,6 +4,7 @@
 
 class BlockChain {
 private:
+	std::vector<Transaction> dataBaseForTransactions; // All information about transaction, Вся информация о транзакциях
 	std::vector<Block> blockchain;
 	int length;		//Count of '0' in the beginning of hash, кол-во нулей в начале хеша
 
@@ -21,6 +22,11 @@ public:
 	// Checks if hash was calculated right and if it is the same hash as hash of previous one, Проверяет правильно ли посчитан хэш и совпадает ли он с хэшом прошлого блока
 	bool isHashValid() const;
 
-
 	void printBlockChain() const;
+
+	// Methods to transfer money from one account to another, Методы для перевода денег с одного акканута на другой
+	void proccessTransaction(const Transaction& tr);
+	void addTransaction(const Transaction& tr);
+
+	bool transformTransactionsToJSON() const;
 };
