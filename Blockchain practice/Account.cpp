@@ -151,7 +151,7 @@ namespace UserInformation {
 			std::cout << "You successfully registered your account!\n";
 		}
 		else {
-			std::cout << "You can't use this username - choose another one\n";
+			throw std::invalid_argument("You can't use this username - choose another one\n");
 		}
 	}
 
