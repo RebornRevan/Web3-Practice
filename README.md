@@ -1,32 +1,21 @@
-More information later
+## Project Updates (Completed)
 
-UPDATE:
+- ~~Finished goals written as comments~~
+- ~~Create a system for logging in and using secretKeys (seed phrases) for recovery~~
+- Added user authentication (login) and account access recovery via 6-word secret keys.
+- Implemented JSON export for registered accounts (`users.json`) and mined block transactions (`transactions.json`).
+- Expanded console menu options to support authentication and recovery.
+- Rebranded user management into a special `UserInformation` namespace.
+- Change the README.md for better sight
+---
 
-~~Reorganized my project to more logic and comfort view of each class and its functions~~ Finished goals written as a comments:
+## Future Goals & Roadmap
 
- - Added Log into the system and Recovery Access to the account in case if user forgot the password
+### Phase 1: Smart Contract Implementation - Now
+- **Core Ledger Contract (Solidity):** Develop a smart contract to manage test balances and transfers using Ethereum wallet addresses (`address`).
+- **Smart Contracts:** Develop core smart contracts and enforce contract validation rules.
+- **Remix VM Testing:** Compile, deploy, and test the contract in Remix VM (to verify both successful transfers and to reject invalid operations).
 
- - Modified console choices up to 2 new features(written above this message)
-
-~~Small adjustments in different places, began to complete goals in the comment section~~ Made special namespace for reading and controling Information of users and implemented there some of the old methods that were running in the program
-
-FUTURE GOALS:
-
-MOST IMPORTANT:
-
-- In my plans is to integrate SQLite to persistently store user profiles, account states, and transaction histories instead of holding them in RAM during the runtime.
-
-("-" = Can be done, "/" = Need knowledge to understand and create, "-/" = Have an idea how to implement, but have some doubts)
-
-~~Create a system for logging in and using secretKeys(сиды) for recovery (Started)~~
-
-~~-Other goals are written as a comments (Started)~~
-
--/ Achieve mining reward for the account
-
-/Build P2P
-
-/State management(Save information after closing console,
-
-Change how balance works in system(now it is static, need to make dynamic))
-
+### Phase 2: Testnet Deployment
+- **Testnet Deployment:** Deploy the verified contract to the **Sepolia** testnet and initiate transactions using **MetaMask**.
+- **Parsing JSON:** Build an external script (Python) to parse the exported `users.json` and `transactions.json` in order to enter test data into the contract, and compare state results.
