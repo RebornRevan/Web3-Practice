@@ -77,7 +77,7 @@ void BlockChain::proccessTransaction(const Transaction& tr) {
 	if (!UserInformation::hasUser(tr.getSender())) {
 		throw std::runtime_error("The sender doesn't exist in the system\n");
 	}
-	if (!UserInformation::hasUser(tr.getSender())) {
+	if (!UserInformation::hasUser(tr.getReceiver())) {
 		throw std::runtime_error("The receiver doesn't exist in the system\n");
 	}
 
@@ -118,7 +118,7 @@ bool BlockChain::transformTransactionsToJSON() const {
 
 			//JSON format, JSON формат
 			file << "  {\n"
-				<< "    \"blockIndex\": \"" << block.index << ",\n"
+				<< "    \"blockIndex\": " << block.index << ",\n"
 				<< "    \"senderName\": \"" << pair.getSender() << "\",\n"
 				<< "    \"receiverName\": \"" << pair.getReceiver() << "\",\n"
 				<< "    \"amountCents\": " << amountCents << "\n"
