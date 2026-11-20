@@ -1,3 +1,5 @@
+More information later
+
 UPDATE:
 
 ~~Reorganized my project to more logic and comfort view of each class and its functions~~ Finished goals written as a comments:
