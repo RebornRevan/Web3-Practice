@@ -1,3 +1,4 @@
 .vs/ 
 users.json
 transactions.json
+**/x64/
