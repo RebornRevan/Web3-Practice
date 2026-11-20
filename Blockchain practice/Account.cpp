@@ -146,7 +146,7 @@ namespace UserInformation {
 
 
 	void addUser(const Account& user) {
-		if (dataUsers.count(user.getName()) == 0) {
+		if (!hasUser(user.getName())) {
 			dataUsers.insert({ user.getName(), user });
 			std::cout << "You successfully registered your account!\n";
 		}
